@@ -2,6 +2,14 @@
 
 A liquid-glass edge dock for macOS with live widgets and a command center for your AI coding agents.
 
+![EdgeDeck on the edge of the screen with the Weather flyout open](.github/assets/hero.png)
+
+<p align="center">
+  <img src=".github/assets/preview.gif" alt="Clicking the AI Usage icon opens live Claude Code and Codex limits counting down" width="760">
+</p>
+
+<p align="center"><a href=".github/assets/edgedeck-film.mp4"><strong>▶ Watch the 30-second film</strong></a></p>
+
 EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and widgets live in it; clicking a widget opens a flyout next to the dock.
 
 ## Features
@@ -14,6 +22,7 @@ EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and w
 - **Multiple AI accounts.** Save several Claude Code and Codex logins and switch the active one in one click. The switch applies to the terminal, IDE extensions and other tools.
 - **Dispatch.** Send a task to Claude Code, Codex, OpenCode or Ollama and read the answer in place, or open it as an interactive Terminal session.
 - **Widgets.** System monitor (plus a live detailed window), clipboard history with images, weather, now playing, Bluetooth devices and a quick-notes scratchpad.
+- **Twelve themes**, from Liquid Glass and Monochrome to Deep Ocean and Ember Sunset. Every flyout, the command palette and the add panel follow the dock's theme.
 - **Command palette** (⌥Space) for apps, widgets, window tiling and quick actions such as Lock Screen and Sleep Display.
 
 ## Install
