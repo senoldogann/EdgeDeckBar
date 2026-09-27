@@ -1,5 +1,10 @@
 # EdgeDeck
 
+[![Latest release](https://img.shields.io/github/v/release/senoldogann/EdgeDeckBar)](https://github.com/senoldogann/EdgeDeckBar/releases/latest)
+[![CI](https://github.com/senoldogann/EdgeDeckBar/actions/workflows/ci.yml/badge.svg)](https://github.com/senoldogann/EdgeDeckBar/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![macOS 15+](https://img.shields.io/badge/macOS-15%2B-black)
+
 A liquid-glass edge dock for macOS with live widgets and a command center for your AI coding agents.
 
 ![EdgeDeck on the edge of the screen with the Weather flyout open](.github/assets/hero.png)
@@ -27,14 +32,13 @@ EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and w
 
 ## Install
 
-Download the latest `EdgeDeck-x.y.z.dmg` from [Releases](https://github.com/senoldogann/EdgeDeckBar/releases). Open it and drag **EdgeDeck** into **Applications**. Releases are signed with a Developer ID and notarized by Apple, so they open without Gatekeeper warnings.
+**[⬇ Download the latest DMG](https://github.com/senoldogann/EdgeDeckBar/releases/latest)** (macOS 15 or later)
 
-## Requirements
+Open the DMG and drag **EdgeDeck** into **Applications**. Releases are signed with a Developer ID and notarized by Apple, so they open without Gatekeeper warnings. EdgeDeck runs from the menu bar, not the Dock, and appears on the edge of your screen.
 
-- macOS 15 or later
-- Swift 6 toolchain (Xcode 16 or later)
+## Build from source
 
-## Build and run
+Requires macOS 15 or later and the Swift 6 toolchain (Xcode 16 or later).
 
 ```sh
 ./script/build_and_run.sh          # debug build, bundles and launches dist/EdgeDeck.app
