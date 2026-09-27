@@ -29,15 +29,15 @@ public struct DynamicWaveformBarView: View {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color(red: 1.0, green: 0.25, blue: 0.55),
-                        Color(red: 0.65, green: 0.20, blue: 0.95)
+                        EdgeDeckPalette.violet,
+                        EdgeDeckPalette.cyan
                     ],
                     startPoint: .bottom,
                     endPoint: .top
                 )
             )
             .frame(width: 3.5, height: max(5.0, targetHeight))
-            .shadow(color: isPlaying ? Color.pink.opacity(0.35) : Color.clear, radius: 2.5, x: 0.0, y: 1.0)
+            .shadow(color: isPlaying ? EdgeDeckPalette.violet.opacity(0.35) : Color.clear, radius: 2.5, x: 0.0, y: 1.0)
             .onAppear {
                 if isPlaying {
                     withAnimation(
@@ -124,18 +124,23 @@ public struct NowPlayingFlyoutView: View {
             // Album Art with Liquid Glass Border & Waveform
             ZStack(alignment: .bottom) {
                 RoundedRectangle(cornerRadius: 18.0, style: .continuous)
+                    // Kapak görseli yokken doygun renkli sahte kapak yerine sakin, temaya uyumlu bir cam karo
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color(red: 0.95, green: 0.20, blue: 0.45),
-                                Color(red: 0.55, green: 0.15, blue: 0.75)
+                                Color(red: 0.20, green: 0.18, blue: 0.34),
+                                Color(red: 0.08, green: 0.09, blue: 0.16)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
+                    .overlay(
+                        RadialGradient(colors: [EdgeDeckPalette.violet.opacity(0.45), .clear], center: .topLeading, startRadius: 0, endRadius: 150)
+                            .clipShape(RoundedRectangle(cornerRadius: 18.0, style: .continuous))
+                    )
                     .frame(width: 140.0, height: 140.0)
-                    .shadow(color: Color.pink.opacity(0.35), radius: 14.0, x: 0.0, y: 6.0)
+                    .shadow(color: Color.black.opacity(0.35), radius: 14.0, x: 0.0, y: 6.0)
                     .overlay(
                         RoundedRectangle(cornerRadius: 18.0, style: .continuous)
                             .strokeBorder(
@@ -207,8 +212,8 @@ public struct NowPlayingFlyoutView: View {
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        Color(red: 1.0, green: 0.25, blue: 0.55),
-                                        Color(red: 0.65, green: 0.20, blue: 0.95)
+                                        EdgeDeckPalette.violet,
+                                        EdgeDeckPalette.cyan
                                     ],
                                     startPoint: .leading,
                                     endPoint: .trailing
@@ -282,15 +287,15 @@ public struct NowPlayingFlyoutView: View {
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        Color(red: 0.95, green: 0.20, blue: 0.45),
-                                        Color(red: 0.70, green: 0.15, blue: 0.65)
+                                        EdgeDeckPalette.violet,
+                                        Color(red: 0.45, green: 0.40, blue: 0.95)
                                     ],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
                             )
                             .frame(width: 46.0, height: 46.0)
-                            .shadow(color: Color.pink.opacity(0.40), radius: 8.0, x: 0.0, y: 3.0)
+                            .shadow(color: EdgeDeckPalette.violet.opacity(0.40), radius: 8.0, x: 0.0, y: 3.0)
 
                         Image(systemName: state.isPlaying ? "pause.fill" : "play.fill")
                             .accessibilityLabel(state.isPlaying ? "Pause" : "Play")

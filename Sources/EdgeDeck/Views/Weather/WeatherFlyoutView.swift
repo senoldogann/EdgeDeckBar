@@ -37,66 +37,55 @@ public struct WeatherFlyoutView: View {
                 .pointingHandCursor()
             }
 
-            // Hero Weather Card
-            VStack(spacing: 6.0) {
-                Image(systemName: state.symbolName)
-                    .font(.system(size: 48.0))
-                    .symbolRenderingMode(.multicolor)
-                    .shadow(color: Color.orange.opacity(0.30), radius: 8.0, x: 0.0, y: 4.0)
-                    .padding(.top, 4.0)
-
-                Text("\(Int(round(state.temperatureCelsius)))°")
-                    .font(.system(size: 46.0, weight: .medium, design: .rounded))
-                    .foregroundColor(.primary)
-
-                Text(state.conditionText)
-                    .font(.system(size: 14.0, weight: .medium))
-                    .foregroundColor(.secondary)
-
-                HStack(spacing: 12.0) {
-                    Text("H: \(Int(round(state.highCelsius)))°")
-                        .font(.system(size: 12.0, weight: .semibold))
+            // Hero: büyük sıcaklık solda, durum ve simge sağda
+            HStack(alignment: .center, spacing: 12.0) {
+                VStack(alignment: .leading, spacing: 4.0) {
+                    Text("\(Int(round(state.temperatureCelsius)))°")
+                        .font(.system(size: 64.0, weight: .thin, design: .rounded))
+                        .foregroundColor(.primary)
+                    Text(state.conditionText)
+                        .font(.system(size: 14.0, weight: .semibold))
+                        .foregroundColor(.primary)
+                    Text("H \(Int(round(state.highCelsius)))°  ·  L \(Int(round(state.lowCelsius)))°")
+                        .font(.system(size: 12.0, weight: .medium))
+                        .monospacedDigit()
                         .foregroundColor(.secondary)
-                    Text("L: \(Int(round(state.lowCelsius)))°")
-                        .font(.system(size: 12.0, weight: .semibold))
-                        .foregroundColor(.secondary.opacity(0.80))
                 }
-                .padding(.horizontal, 10.0)
-                .padding(.vertical, 4.0)
-                .liquidGlassPill(accentColor: nil)
+                Spacer(minLength: 0.0)
+                Image(systemName: state.symbolName)
+                    .font(.system(size: 56.0))
+                    .symbolRenderingMode(.multicolor)
+                    .shadow(color: EdgeDeckPalette.amber.opacity(0.35), radius: 14.0)
             }
-            .padding(.vertical, 4.0)
+            .padding(14.0)
+            .liquidGlassCard(cornerRadius: 16.0, isHovered: false)
 
-            // Hourly Forecast Strip
+            // Saatlik tahmin: kartlar tüm genişliğe eşit dağılır
             VStack(alignment: .leading, spacing: 8.0) {
-                Text("HOURLY FORECAST")
-                    .font(.system(size: 10.0, weight: .bold))
-                    .foregroundColor(.secondary.opacity(0.80))
-                    .padding(.horizontal, 4.0)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10.0) {
-                        ForEach(state.hourly) { forecast in
-                            VStack(spacing: 8.0) {
-                                Text(forecast.hour)
-                                    .font(.system(size: 11.0, weight: .medium))
-                                    .foregroundColor(.secondary)
-
-                                Image(systemName: forecast.symbolName)
-                                    .font(.system(size: 18.0))
-                                    .symbolRenderingMode(.multicolor)
-                                    .frame(height: 22.0)
-
-                                Text("\(Int(round(forecast.temperatureCelsius)))°")
-                                    .font(.system(size: 12.0, weight: .bold))
-                                    .foregroundColor(.primary)
-                            }
-                            .padding(.vertical, 10.0)
-                            .padding(.horizontal, 10.0)
-                            .liquidGlassCard(cornerRadius: 12.0, isHovered: false)
-                        }
-                    }
+                Text("Next hours")
+                    .font(.system(size: 11.0, weight: .semibold))
+                    .foregroundColor(.secondary)
                     .padding(.horizontal, 2.0)
+
+                HStack(spacing: 8.0) {
+                    ForEach(state.hourly.prefix(5)) { forecast in
+                        VStack(spacing: 8.0) {
+                            Text(forecast.hour)
+                                .font(.system(size: 11.0, weight: .medium))
+                                .monospacedDigit()
+                                .foregroundColor(.secondary)
+                            Image(systemName: forecast.symbolName)
+                                .font(.system(size: 18.0))
+                                .symbolRenderingMode(.multicolor)
+                                .frame(height: 22.0)
+                            Text("\(Int(round(forecast.temperatureCelsius)))°")
+                                .font(.system(size: 13.0, weight: .semibold))
+                                .foregroundColor(.primary)
+                        }
+                        .padding(.vertical, 10.0)
+                        .frame(maxWidth: .infinity)
+                        .liquidGlassCard(cornerRadius: 12.0, isHovered: false)
+                    }
                 }
             }
 
