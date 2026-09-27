@@ -13,8 +13,6 @@ jobs:
   release:
     runs-on: macos-15
     timeout-minutes: 45
-    env:
-      KEYCHAIN_PATH: ${{ runner.temp }}/edgedeck-signing.keychain-db
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +34,9 @@ jobs:
             echo "error: MACOS_CERTIFICATE_P12_BASE64 and MACOS_CERTIFICATE_PASSWORD secrets are required" >&2
             exit 1
           fi
+          # runner.temp iş düzeyindeki env'de kullanılamadığından yol burada belirlenip sonraki adımlara aktarılır
+          KEYCHAIN_PATH="${RUNNER_TEMP}/edgedeck-signing.keychain-db"
+          echo "KEYCHAIN_PATH=${KEYCHAIN_PATH}" >> "${GITHUB_ENV}"
           KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
           CERT_PATH="${RUNNER_TEMP}/developer-id.p12"
           echo "${MACOS_CERTIFICATE_P12_BASE64}" | base64 --decode > "${CERT_PATH}"
@@ -77,4 +78,7 @@ jobs:
 
       - name: Remove signing keychain
         if: always()
-        run: security delete-keychain "${KEYCHAIN_PATH}" || true
+        run: |
+          if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "${KEYCHAIN_PATH}"
+          fi
