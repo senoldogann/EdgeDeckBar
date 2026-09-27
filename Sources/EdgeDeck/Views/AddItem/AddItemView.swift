@@ -38,6 +38,39 @@ public struct AddItemView: View {
         filterApplications(applications: applications, query: state.searchQuery)
     }
 
+    @Environment(\.dockMaterialStyle) private var dockMaterialStyle
+
+    /// Koyu dock temalarında panel temanın yüzeyini kullanır; metinler beyaz olduğundan açık temalarda noir zemin korunur.
+    @ViewBuilder
+    private var panelBackground: some View {
+        if dockMaterialStyle.prefersDarkContent {
+            ThemedGlassBackground(style: dockMaterialStyle, cornerRadius: 24.0)
+        } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 24.0, style: .continuous)
+                        .fill(.ultraThinMaterial)
+
+                    RoundedRectangle(cornerRadius: 24.0, style: .continuous)
+                        .fill(Color(white: 0.05).opacity(0.92))
+
+                    RoundedRectangle(cornerRadius: 24.0, style: .continuous)
+                        .strokeBorder(
+                            LinearGradient(
+                                stops: [
+                                    .init(color: Color.white.opacity(0.55), location: 0.0),
+                                    .init(color: Color.white.opacity(0.18), location: 0.35),
+                                    .init(color: Color.white.opacity(0.05), location: 0.70),
+                                    .init(color: Color.white.opacity(0.30), location: 1.0)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.0
+                        )
+                }
+        }
+    }
+
     public var body: some View {
         VStack(spacing: 16.0) {
             // Header with Luxury Segmented Pill Switcher & Dismiss
@@ -75,30 +108,7 @@ public struct AddItemView: View {
         }
         .padding(20.0)
         .frame(width: 440.0, height: 500.0)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 24.0, style: .continuous)
-                    .fill(.ultraThinMaterial)
-
-                RoundedRectangle(cornerRadius: 24.0, style: .continuous)
-                    .fill(Color(white: 0.05).opacity(0.92))
-
-                RoundedRectangle(cornerRadius: 24.0, style: .continuous)
-                    .strokeBorder(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.white.opacity(0.55), location: 0.0),
-                                .init(color: Color.white.opacity(0.18), location: 0.35),
-                                .init(color: Color.white.opacity(0.05), location: 0.70),
-                                .init(color: Color.white.opacity(0.30), location: 1.0)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1.0
-                    )
-            }
-        )
+        .background(panelBackground)
         .shadow(color: Color.black.opacity(0.60), radius: 30.0, x: 0.0, y: 12.0)
         // Arka plan her zaman koyu olduğundan sistem kontrolleri de koyu şemada çizilmeli
         .environment(\.colorScheme, .dark)

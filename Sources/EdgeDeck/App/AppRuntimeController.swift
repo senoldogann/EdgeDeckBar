@@ -367,6 +367,10 @@ public final class AppRuntimeController {
         self.preferences = newPreferences
         clipboardMonitor.updateExcludedBundleIdentifiers(newPreferences.clipboardExcludedBundleIdentifiers)
         refreshSettingsWindow()
+        // Açık flyout yeni temaya hemen uysun
+        if state.flyout.isVisible, let activeID = state.flyout.activeItemID {
+            syncFlyout(activeItemID: activeID)
+        }
         if state.placement != newPreferences.placement {
             dispatch(action: .updatePlacement(newPreferences.placement))
         } else {
@@ -967,9 +971,9 @@ public final class AppRuntimeController {
         }
 
         if flyoutController.panel.isVisible {
-            flyoutController.replace(content: contentView, frame: frame)
+            flyoutController.replace(content: AnyView(contentView.dockTheme(preferences.materialStyle)), frame: frame)
         } else {
-            flyoutController.show(content: contentView, frame: frame)
+            flyoutController.show(content: AnyView(contentView.dockTheme(preferences.materialStyle)), frame: frame)
         }
 
         setupFlyoutMonitors()
@@ -1012,7 +1016,7 @@ public final class AppRuntimeController {
             }
         )
 
-        flyoutController.show(content: AnyView(previewsView), frame: frame)
+        flyoutController.show(content: AnyView(previewsView.dockTheme(preferences.materialStyle)), frame: frame)
         setupFlyoutMonitors()
     }
 
@@ -1665,7 +1669,7 @@ public final class AppRuntimeController {
             }
         )
 
-        panel.contentView = NSHostingView(rootView: paletteView)
+        panel.contentView = NSHostingView(rootView: paletteView.dockTheme(preferences.materialStyle))
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         self.commandPalettePanel = panel
@@ -1911,7 +1915,7 @@ public final class AppRuntimeController {
             }
         )
 
-        panel.contentView = NSHostingView(rootView: addView)
+        panel.contentView = NSHostingView(rootView: addView.dockTheme(preferences.materialStyle))
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         self.addItemPanel = panel

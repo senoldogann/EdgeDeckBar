@@ -101,6 +101,7 @@ public struct LiquidGlassSurfaceModifier: ViewModifier {
     public let isHovered: Bool
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dockMaterialStyle) private var dockMaterialStyle
 
     public init(
         cornerRadius: CGFloat,
@@ -113,10 +114,22 @@ public struct LiquidGlassSurfaceModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
+        // "System" dışındaki temalarda yüzey dock ile birebir aynı tema çizimini kullanır
+        if dockMaterialStyle != .system {
+            content
+                .background(ThemedGlassBackground(style: dockMaterialStyle, cornerRadius: cornerRadius))
+                .shadow(color: Color.black.opacity(0.40), radius: isHovered ? 16.0 : 10.0, x: 0.0, y: isHovered ? 6.0 : 4.0)
+                .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        } else {
+            systemSurface(content: content)
+        }
+    }
+
+    private func systemSurface(content: Content) -> some View {
         let isDark = colorScheme == .dark
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
-        content
+        return content
             .background(
                 ZStack {
                     // 1. Base Deep Ultra-Thin Material (Variable Blur)
