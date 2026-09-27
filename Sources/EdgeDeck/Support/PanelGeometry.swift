@@ -100,6 +100,25 @@ public func edgeActivationFrame(
     }
 }
 
+/// Dock gizliyken ekran kenarında, dock'un ortasına hizalı duran küçük tutamacın çerçevesi.
+public func edgeHandleFrame(
+    dockFrame: CGRect,
+    screen: ScreenGeometry,
+    edge: DockEdge,
+    length: CGFloat,
+    thickness: CGFloat
+) -> CGRect {
+    let inset: CGFloat = 3.0
+    switch edge {
+    case .right:
+        return CGRect(x: screen.visibleFrame.maxX - thickness - inset, y: dockFrame.midY - length / 2.0, width: thickness, height: length)
+    case .left:
+        return CGRect(x: screen.visibleFrame.minX + inset, y: dockFrame.midY - length / 2.0, width: thickness, height: length)
+    case .top:
+        return CGRect(x: dockFrame.midX - length / 2.0, y: screen.visibleFrame.maxY - thickness - inset, width: length, height: thickness)
+    }
+}
+
 public func edgePanelCollectionBehavior() -> NSWindow.CollectionBehavior {
     return [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
 }

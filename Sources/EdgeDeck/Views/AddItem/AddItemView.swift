@@ -14,6 +14,8 @@ public struct AddItemView: View {
     @State private var linkTitleText: String = ""
     @State private var linkError: String? = nil
     @FocusState private var isSearchFocused: Bool
+    /// Arka plan ikon yüklemesi bitince satırların önbellekten yeniden okunması için artırılır.
+    @State private var iconsLoadedGeneration: Int = 0
     @FocusState private var isLinkURLFocused: Bool
 
     public init(
@@ -278,6 +280,11 @@ public struct AddItemView: View {
                     }
                     .padding(.vertical, 2.0)
                 }
+                // Tüm ikonlar panel açılır açılmaz arka planda yüklenir; kaydırma önbellekten okur
+                .task(id: applications.count) {
+                    await IconCache.shared.loadApplicationIcons(applications.map { (key: $0.bundleIdentifier, path: $0.applicationURL.path) })
+                    iconsLoadedGeneration += 1
+                }
             }
         }
     }
@@ -285,14 +292,19 @@ public struct AddItemView: View {
     private func appRow(app: ApplicationDescriptor, index: Int) -> some View {
         let isSelected = state.selectedIndex == index
         return HStack(spacing: 12.0) {
-            let icon = IconCache.shared.image(key: app.bundleIdentifier) {
-                NSWorkspace.shared.icon(forFile: app.applicationURL.path)
+            // İkon henüz yüklenmediyse hafif yer tutucu gösterilir; senkron disk okuması kaydırmayı dondurur
+            Group {
+                if let icon = IconCache.shared.cachedImage(key: app.bundleIdentifier) {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    RoundedRectangle(cornerRadius: 8.0, style: .continuous)
+                        .fill(Color.white.opacity(0.08))
+                }
             }
-            Image(nsImage: icon)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 32.0, height: 32.0)
-                .shadow(color: Color.black.opacity(0.35), radius: 3.0, x: 0.0, y: 1.5)
+            .frame(width: 32.0, height: 32.0)
+            .id(iconsLoadedGeneration)
 
             VStack(alignment: .leading, spacing: 2.0) {
                 Text(app.displayName)
@@ -326,7 +338,6 @@ public struct AddItemView: View {
                 .foregroundColor(.white)
             }
             .buttonStyle(.plain)
-            .pointingHandCursor()
         }
         .padding(.horizontal, 12.0)
         .padding(.vertical, 7.5)

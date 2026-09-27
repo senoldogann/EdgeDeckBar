@@ -13,7 +13,30 @@ public final class IconCache {
         if let cached = cache[key] {
             return cached
         }
-        let raw = loader()
+        let crisp = Self.crispRepresentation(of: loader())
+        cache[key] = crisp
+        return crisp
+    }
+
+    public func cachedImage(key: String) -> NSImage? {
+        cache[key]
+    }
+
+    /// Uygulama ikonlarını ana iş parçacığını bloke etmeden yükler; kaydırma sırasında satırlar önbellekten okur.
+    public func loadApplicationIcons(_ requests: [(key: String, path: String)]) async {
+        let missing = requests.filter { cache[$0.key] == nil }
+        guard !missing.isEmpty else { return }
+        let loaded = await Task.detached(priority: .userInitiated) { () -> [LoadedIcon] in
+            missing.map { request in
+                LoadedIcon(key: request.key, image: Self.crispRepresentation(of: NSWorkspace.shared.icon(forFile: request.path)))
+            }
+        }.value
+        for icon in loaded where cache[icon.key] == nil {
+            cache[icon.key] = icon.image
+        }
+    }
+
+    nonisolated private static func crispRepresentation(of raw: NSImage) -> NSImage {
         let targetSize = NSSize(width: 128.0, height: 128.0)
         let crisp = NSImage(size: targetSize)
         if let bestRep = raw.bestRepresentation(for: NSRect(origin: .zero, size: targetSize), context: nil, hints: nil) {
@@ -23,9 +46,15 @@ public final class IconCache {
                 crisp.addRepresentation(rep)
             }
         }
-        cache[key] = crisp
         return crisp
     }
+}
+
+/// Arka planda üretilip ana aktöre aktarılan ikon. NSImage Sendable değildir; üretildikten sonra
+/// değiştirilmediği ve yalnızca okunduğu için aktarım güvenlidir.
+private struct LoadedIcon: @unchecked Sendable {
+    let key: String
+    let image: NSImage
 }
 
 public struct WidgetIconView: View {

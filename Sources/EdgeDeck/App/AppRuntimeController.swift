@@ -2068,22 +2068,25 @@ public final class AppRuntimeController {
             edgeInset: 10.0
         )
 
-        if state.isDockRevealed {
-            panelController.show(frame: frame)
-        } else {
-            panelController.hide()
-            tooltipController.hide()
-        }
-
+        // Tutamaç önce konumlanır ki dock gizlenirken onu belirtebilsin
         if state.placement.autoHide {
-            let activationFrame = edgeActivationFrame(
+            let handleFrame = edgeHandleFrame(
+                dockFrame: frame,
                 screen: screen,
                 edge: state.placement.edge,
-                thickness: 6.0
+                length: 92.0,
+                thickness: 16.0
             )
-            panelController.setAutoHide(enabled: true, activationFrame: activationFrame)
+            panelController.setAutoHide(enabled: true, handleFrame: handleFrame, edge: state.placement.edge, style: preferences.materialStyle)
         } else {
-            panelController.setAutoHide(enabled: false, activationFrame: .zero)
+            panelController.setAutoHide(enabled: false, handleFrame: .zero, edge: state.placement.edge, style: preferences.materialStyle)
+        }
+
+        if state.isDockRevealed {
+            panelController.show(frame: frame, edge: state.placement.edge)
+        } else {
+            panelController.hide(edge: state.placement.edge)
+            tooltipController.hide()
         }
     }
 }
