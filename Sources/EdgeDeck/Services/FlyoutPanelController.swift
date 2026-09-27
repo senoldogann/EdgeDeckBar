@@ -25,7 +25,7 @@ public final class FlyoutPanelController {
     }
 
     public func show(content: AnyView, frame: CGRect) {
-        panel.contentView = NSHostingView(rootView: content)
+        panel.contentView = makeFixedFrameHostingView(rootView: content)
         panel.setFrame(frame, display: true, animate: false)
         panel.makeKeyAndOrderFront(nil)
     }
@@ -36,7 +36,7 @@ public final class FlyoutPanelController {
         if let hostingView = panel.contentView as? NSHostingView<AnyView> {
             hostingView.rootView = content
         } else {
-            panel.contentView = NSHostingView(rootView: content)
+            panel.contentView = makeFixedFrameHostingView(rootView: content)
         }
         // Periyodik güncellemelerde boyut aynıysa pencere senkron olarak yeniden çizdirilmez
         if panel.frame != frame {
@@ -47,4 +47,14 @@ public final class FlyoutPanelController {
     public func hide() {
         panel.orderOut(nil)
     }
+}
+
+/// Çerçevesi kod tarafından verilen panel için hosting view üretir. Varsayılan `sizingOptions` içeriğin
+/// min/ideal/max boyutunu pencereye kısıt olarak ekler; sabit çerçeveyle çatışınca AppKit'in "Update Constraints"
+/// geçişi sonsuz döngüye girip uygulamayı sonlandırır. Boyut yalnızca `setFrame` ile belirlenir.
+@MainActor
+private func makeFixedFrameHostingView(rootView: AnyView) -> NSHostingView<AnyView> {
+    let hostingView = NSHostingView(rootView: rootView)
+    hostingView.sizingOptions = []
+    return hostingView
 }
