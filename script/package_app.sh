@@ -5,6 +5,12 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
 
 APP_NAME="EdgeDeck"
+
+# Sürüm açıkça verilmelidir (CI'da git etiketinden gelir): EDGEDECK_VERSION=1.2.0 ./script/package_app.sh
+if [[ -z "${EDGEDECK_VERSION:-}" ]]; then
+    echo "error: EDGEDECK_VERSION is not set (example: EDGEDECK_VERSION=1.0.0 ./script/package_app.sh)" >&2
+    exit 1
+fi
 BUILD_DIR="${ROOT_DIR}/build"
 APP_BUNDLE="${BUILD_DIR}/${APP_NAME}.app"
 CONTENTS_DIR="${APP_BUNDLE}/Contents"
@@ -32,6 +38,8 @@ fi
 
 echo "==> Copying Info.plist..."
 cp "${ROOT_DIR}/script/Info.plist" "${CONTENTS_DIR}/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${EDGEDECK_VERSION}" "${CONTENTS_DIR}/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${EDGEDECK_VERSION}" "${CONTENTS_DIR}/Info.plist"
 
 echo "==> Writing hardened runtime entitlements..."
 cat << 'EOF' > "${ENTITLEMENTS}"
@@ -56,6 +64,10 @@ if [[ -n "${DEV_ID}" ]]; then
     echo "==> Found Apple Developer ID identity: ${DEV_ID}"
     SIGN_IDENTITY="${DEV_ID}"
     CODESIGN_FLAGS=(--options runtime --timestamp)
+elif [[ -n "${CI:-}" ]]; then
+    # CI kullanıcıya dağıtılacak paket üretir; imzasız bir DMG asla yayınlanmamalı
+    echo "error: no 'Developer ID Application' identity in the keychain; check the MACOS_CERTIFICATE_P12_BASE64 secret" >&2
+    exit 1
 else
     echo "==> Using Ad-Hoc / Local Developer signature..."
     SIGN_IDENTITY="-"
@@ -66,7 +78,7 @@ echo "==> Codesigning bundle..."
 codesign --force --deep --sign "${SIGN_IDENTITY}" "${CODESIGN_FLAGS[@]}" --entitlements "${ENTITLEMENTS}" "${APP_BUNDLE}"
 
 echo "==> Packaging DMG installer..."
-DMG_PATH="${BUILD_DIR}/${APP_NAME}-1.0.0.dmg"
+DMG_PATH="${BUILD_DIR}/${APP_NAME}-${EDGEDECK_VERSION}.dmg"
 rm -f "${DMG_PATH}"
 
 DMG_STAGE="/tmp/edgedeck_dmg_stage"
@@ -93,6 +105,9 @@ elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_APP_SPECIFIC_PASSWORD:-}" && -n "${APP
     xcrun notarytool submit "${DMG_PATH}" --apple-id "${APPLE_ID}" --password "${APPLE_APP_SPECIFIC_PASSWORD}" --team-id "${APPLE_TEAM_ID}" --wait
     echo "==> Stapling notarization ticket to DMG..."
     xcrun stapler staple "${DMG_PATH}"
+elif [[ -n "${CI:-}" ]]; then
+    echo "error: notarization credentials missing in CI; set APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD and APPLE_TEAM_ID secrets" >&2
+    exit 1
 else
     echo "==> (Notarization skipped: set APPLE_NOTARY_PROFILE or APPLE_ID credentials to enable automated Apple Notary submission)"
 fi

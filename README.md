@@ -16,6 +16,10 @@ EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and w
 - **Widgets.** System monitor (plus a live detailed window), clipboard history with images, weather, now playing, Bluetooth devices and a quick-notes scratchpad.
 - **Command palette** (⌥Space) for apps, widgets, window tiling and quick actions such as Lock Screen and Sleep Display.
 
+## Install
+
+Download the latest `EdgeDeck-x.y.z.dmg` from [Releases](https://github.com/senoldogann/EdgeDeckBar/releases). Open it and drag **EdgeDeck** into **Applications**. Releases are signed with a Developer ID and notarized by Apple, so they open without Gatekeeper warnings.
+
 ## Requirements
 
 - macOS 15 or later
@@ -25,7 +29,7 @@ EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and w
 
 ```sh
 ./script/build_and_run.sh          # debug build, bundles and launches dist/EdgeDeck.app
-./script/package_app.sh            # release build, signed .app and .dmg in build/
+EDGEDECK_VERSION=1.0.0 ./script/package_app.sh   # release build, signed .app and .dmg in build/
 swift test                         # test suite
 ```
 
@@ -54,6 +58,24 @@ Account switching handles real login credentials, so it is deliberately conserva
 - **Where logins are stored.** Saved logins stay in your login Keychain. They are never written to disk in plain text and never sent anywhere.
 - **Claude ownership checks.** Before a Claude login is saved under an account, EdgeDeck asks Anthropic's `/api/oauth/profile` endpoint (the same one Claude Code uses) which account the token belongs to. Revoked logins are flagged and are never saved.
 - **Switching needs closed sessions.** EdgeDeck refuses to switch while that provider's CLI is running. Running sessions refresh their login in the background and would overwrite or revoke the switched one.
+
+## Releasing
+
+Pushing a version tag builds, signs, notarizes and publishes the DMG automatically (`.github/workflows/release.yml`):
+
+```sh
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+The workflow needs these repository secrets:
+
+| Secret | Value |
+| --- | --- |
+| `MACOS_CERTIFICATE_P12_BASE64` | Your *Developer ID Application* certificate and private key, exported as `.p12` and base64-encoded |
+| `MACOS_CERTIFICATE_PASSWORD` | The password chosen when exporting the `.p12` |
+| `APPLE_ID` | The Apple ID email of the developer account |
+| `APPLE_APP_SPECIFIC_PASSWORD` | An app-specific password from [account.apple.com](https://account.apple.com) |
+| `APPLE_TEAM_ID` | Your 10-character Apple Developer Team ID |
 
 ## License
 

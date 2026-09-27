@@ -1,0 +1,80 @@
+name: Release
+
+# v1.2.0 gibi bir etiket gönderildiğinde imzalı ve notarize edilmiş DMG üretip GitHub Release'e yükler.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      KEYCHAIN_PATH: ${{ runner.temp }}/edgedeck-signing.keychain-db
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Run tests
+        run: swift test
+
+      - name: Import Developer ID certificate
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MACOS_CERTIFICATE_P12_BASE64}" || -z "${MACOS_CERTIFICATE_PASSWORD}" ]]; then
+            echo "error: MACOS_CERTIFICATE_P12_BASE64 and MACOS_CERTIFICATE_PASSWORD secrets are required" >&2
+            exit 1
+          fi
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
+          CERT_PATH="${RUNNER_TEMP}/developer-id.p12"
+          echo "${MACOS_CERTIFICATE_P12_BASE64}" | base64 --decode > "${CERT_PATH}"
+          security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+          security set-keychain-settings -lut 21600 "${KEYCHAIN_PATH}"
+          security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}"
+          security import "${CERT_PATH}" -P "${MACOS_CERTIFICATE_PASSWORD}" -A -t cert -f pkcs12 -k "${KEYCHAIN_PATH}"
+          security set-key-partition-list -S apple-tool:,apple: -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_PATH}" >/dev/null
+          security list-keychains -d user -s "${KEYCHAIN_PATH}" $(security list-keychains -d user | tr -d '"')
+          rm -f "${CERT_PATH}"
+          security find-identity -v -p codesigning "${KEYCHAIN_PATH}"
+
+      - name: Build, sign, notarize and staple
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          export EDGEDECK_VERSION="${GITHUB_REF_NAME#v}"
+          ./script/package_app.sh
+
+      - name: Verify Gatekeeper acceptance
+        run: |
+          set -euo pipefail
+          DMG="build/EdgeDeck-${GITHUB_REF_NAME#v}.dmg"
+          xcrun stapler validate "${DMG}"
+          spctl --assess --type open --context context:primary-signature --verbose "${DMG}"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DMG="build/EdgeDeck-${GITHUB_REF_NAME#v}.dmg"
+          gh release create "${GITHUB_REF_NAME}" "${DMG}" \
+            --title "EdgeDeck ${GITHUB_REF_NAME}" \
+            --generate-notes
+
+      - name: Remove signing keychain
+        if: always()
+        run: security delete-keychain "${KEYCHAIN_PATH}" || true
