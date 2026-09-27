@@ -1,6 +1,6 @@
 import Foundation
 
-public enum DockMaterialStyle: Codable, Equatable, Sendable {
+public enum DockMaterialStyle: Codable, Hashable, Sendable {
     case system
     case translucent
     case crystalClear
@@ -8,6 +8,11 @@ public enum DockMaterialStyle: Codable, Equatable, Sendable {
     case auroraGlow
     case cyberpunkGlass
     case titaniumFrost
+    case monochrome
+    case emberSunset
+    case deepOcean
+    case forestMoss
+    case roseQuartz
     case customRGBA(Double, Double, Double, Double)
 
     public var displayName: String {
@@ -26,10 +31,28 @@ public enum DockMaterialStyle: Codable, Equatable, Sendable {
             return "Cyberpunk Neon"
         case .titaniumFrost:
             return "Titanium Frost"
+        case .monochrome:
+            return "Monochrome"
+        case .emberSunset:
+            return "Ember Sunset"
+        case .deepOcean:
+            return "Deep Ocean"
+        case .forestMoss:
+            return "Forest Moss"
+        case .roseQuartz:
+            return "Rose Quartz"
         case .customRGBA:
             return "Custom RGBA"
         }
     }
+}
+
+public extension DockMaterialStyle {
+    /// Menülerde ve Ayarlar'da sunulan hazır temalar; tüm tema listeleri buradan türetilir.
+    static let presets: [DockMaterialStyle] = [
+        .system, .translucent, .crystalClear, .obsidianDark, .monochrome, .titaniumFrost,
+        .auroraGlow, .deepOcean, .forestMoss, .cyberpunkGlass, .emberSunset, .roseQuartz
+    ]
 }
 
 public func clampCustomRGBA(r: Double, g: Double, b: Double, a: Double) -> (Double, Double, Double, Double) {

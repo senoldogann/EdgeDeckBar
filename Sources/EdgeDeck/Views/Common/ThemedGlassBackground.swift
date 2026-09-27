@@ -50,6 +50,12 @@ public struct ThemedGlassBackground: View {
                 RoundedRectangle(cornerRadius: cornerRadius + 4.0, style: .continuous)
                     .fill(Color.white.opacity(0.12))
                     .blur(radius: 14.0)
+            case .monochrome, .emberSunset, .deepOcean, .forestMoss, .roseQuartz:
+                if let spec = GradientThemeSpec.spec(for: style) {
+                    RoundedRectangle(cornerRadius: cornerRadius + 4.0, style: .continuous)
+                        .fill(LinearGradient(colors: spec.glow, startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .blur(radius: 16.0)
+                }
             default:
                 EmptyView()
             }
@@ -100,6 +106,11 @@ public struct ThemedGlassBackground: View {
                         ),
                         lineWidth: 1.2
                     )
+            case .monochrome, .emberSunset, .deepOcean, .forestMoss, .roseQuartz:
+                if let spec = GradientThemeSpec.spec(for: style) {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(LinearGradient(colors: spec.rim, startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1.3)
+                }
             default:
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .strokeBorder(
@@ -240,6 +251,20 @@ public struct ThemedGlassBackground: View {
                             )
                     )
 
+            case .monochrome, .emberSunset, .deepOcean, .forestMoss, .roseQuartz:
+                if let spec = GradientThemeSpec.spec(for: style) {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(.ultraThinMaterial.opacity(spec.materialOpacity))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                                .fill(spec.base)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                                .fill(LinearGradient(colors: spec.sheen, startPoint: .topLeading, endPoint: .bottomTrailing))
+                        )
+                }
+
             case .customRGBA(let r, let g, let b, let a):
                 let clamped = clampCustomRGBA(r: r, g: g, b: b, a: a)
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -251,13 +276,69 @@ public struct ThemedGlassBackground: View {
     }
 }
 
+/// Yeni temalar tek tip çizilir: taban dolgu, parlama, ortam ışığı ve kenar çizgisi renklerinden oluşur.
+private struct GradientThemeSpec {
+    let base: Color
+    let sheen: [Color]
+    let glow: [Color]
+    let rim: [Color]
+    let materialOpacity: Double
+
+    static func spec(for style: DockMaterialStyle) -> GradientThemeSpec? {
+        switch style {
+        case .monochrome:
+            return GradientThemeSpec(
+                base: Color.black.opacity(0.90),
+                sheen: [Color.white.opacity(0.14), Color.white.opacity(0.02), Color.clear],
+                glow: [Color.white.opacity(0.16), Color.white.opacity(0.04)],
+                rim: [Color.white.opacity(0.95), Color.white.opacity(0.20), Color.white.opacity(0.60)],
+                materialOpacity: 1.0
+            )
+        case .emberSunset:
+            return GradientThemeSpec(
+                base: Color(red: 0.14, green: 0.05, blue: 0.04).opacity(0.86),
+                sheen: [Color(red: 1.0, green: 0.55, blue: 0.20).opacity(0.22), Color(red: 0.95, green: 0.25, blue: 0.45).opacity(0.12)],
+                glow: [Color(red: 1.0, green: 0.55, blue: 0.15).opacity(0.38), Color(red: 0.95, green: 0.20, blue: 0.45).opacity(0.32)],
+                rim: [Color(red: 1.0, green: 0.72, blue: 0.35), Color(red: 1.0, green: 0.35, blue: 0.55)],
+                materialOpacity: 0.6
+            )
+        case .deepOcean:
+            return GradientThemeSpec(
+                base: Color(red: 0.02, green: 0.07, blue: 0.17).opacity(0.86),
+                sheen: [Color(red: 0.20, green: 0.55, blue: 1.0).opacity(0.20), Color(red: 0.10, green: 0.85, blue: 0.85).opacity(0.10)],
+                glow: [Color(red: 0.15, green: 0.45, blue: 1.0).opacity(0.36), Color(red: 0.05, green: 0.85, blue: 0.85).opacity(0.28)],
+                rim: [Color(red: 0.45, green: 0.75, blue: 1.0), Color(red: 0.20, green: 0.95, blue: 0.90)],
+                materialOpacity: 0.6
+            )
+        case .forestMoss:
+            return GradientThemeSpec(
+                base: Color(red: 0.04, green: 0.10, blue: 0.06).opacity(0.86),
+                sheen: [Color(red: 0.45, green: 0.85, blue: 0.40).opacity(0.18), Color(red: 0.85, green: 0.90, blue: 0.40).opacity(0.08)],
+                glow: [Color(red: 0.30, green: 0.80, blue: 0.40).opacity(0.34), Color(red: 0.75, green: 0.90, blue: 0.30).opacity(0.24)],
+                rim: [Color(red: 0.60, green: 0.95, blue: 0.55), Color(red: 0.85, green: 0.95, blue: 0.45)],
+                materialOpacity: 0.6
+            )
+        case .roseQuartz:
+            return GradientThemeSpec(
+                base: Color(red: 1.0, green: 0.86, blue: 0.90).opacity(0.38),
+                sheen: [Color.white.opacity(0.45), Color(red: 1.0, green: 0.70, blue: 0.82).opacity(0.18)],
+                glow: [Color(red: 1.0, green: 0.60, blue: 0.78).opacity(0.30), Color(red: 0.85, green: 0.70, blue: 1.0).opacity(0.24)],
+                rim: [Color.white.opacity(0.95), Color(red: 1.0, green: 0.70, blue: 0.85).opacity(0.70)],
+                materialOpacity: 1.0
+            )
+        case .system, .translucent, .crystalClear, .obsidianDark, .auroraGlow, .cyberpunkGlass, .titaniumFrost, .customRGBA:
+            return nil
+        }
+    }
+}
+
 public extension DockMaterialStyle {
     /// Koyu dolgulu temalarda metnin okunur kalması için içerik koyu renk şemasıyla çizilir.
     var prefersDarkContent: Bool {
         switch self {
-        case .obsidianDark, .auroraGlow, .cyberpunkGlass, .titaniumFrost:
+        case .obsidianDark, .auroraGlow, .cyberpunkGlass, .titaniumFrost, .monochrome, .emberSunset, .deepOcean, .forestMoss:
             return true
-        case .system, .translucent, .crystalClear:
+        case .system, .translucent, .crystalClear, .roseQuartz:
             return false
         case .customRGBA(let r, let g, let b, _):
             return (0.299 * r + 0.587 * g + 0.114 * b) < 0.5

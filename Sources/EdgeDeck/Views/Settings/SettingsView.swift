@@ -209,44 +209,20 @@ public struct SettingsView: View {
                 Picker(
                     "Theme",
                     selection: Binding(
-                        get: {
-                            switch preferences.materialStyle {
-                            case .system: return "system"
-                            case .crystalClear: return "crystal"
-                            case .obsidianDark: return "obsidian"
-                            case .auroraGlow: return "aurora"
-                            case .cyberpunkGlass: return "cyberpunk"
-                            case .titaniumFrost: return "titanium"
-                            case .translucent: return "translucent"
-                            case .customRGBA: return "custom"
-                            }
-                        },
-                        set: { key in
-                            let newStyle: DockMaterialStyle
-                            switch key {
-                            case "system": newStyle = .system
-                            case "crystal": newStyle = .crystalClear
-                            case "obsidian": newStyle = .obsidianDark
-                            case "aurora": newStyle = .auroraGlow
-                            case "cyberpunk": newStyle = .cyberpunkGlass
-                            case "titanium": newStyle = .titaniumFrost
-                            case "translucent": newStyle = .translucent
-                            default: newStyle = .customRGBA(0.1, 0.1, 0.1, 0.8)
-                            }
+                        get: { preferences.materialStyle },
+                        set: { newStyle in
                             var updated = preferences
                             updated.materialStyle = newStyle
                             onUpdatePreferences(updated)
                         }
                     )
                 ) {
-                    Text("System Liquid Glass").tag("system")
-                    Text("Crystal Clear (Diamond Sheen)").tag("crystal")
-                    Text("Obsidian Dark (Smoked Glass)").tag("obsidian")
-                    Text("Aurora Borealis (Emerald / Cyan)").tag("aurora")
-                    Text("Cyberpunk Neon (Magenta / Cyan)").tag("cyberpunk")
-                    Text("Titanium Frost (Brushed Satin)").tag("titanium")
-                    Text("Translucent Blur").tag("translucent")
-                    Text("Custom Tint").tag("custom")
+                    ForEach(DockMaterialStyle.presets, id: \.self) { theme in
+                        Text(theme.displayName).tag(theme)
+                    }
+                    if case .customRGBA = preferences.materialStyle {
+                        Text("Custom Tint").tag(preferences.materialStyle)
+                    }
                 }
             }
         }

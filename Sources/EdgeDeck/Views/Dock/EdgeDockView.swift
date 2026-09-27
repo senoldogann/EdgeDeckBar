@@ -322,46 +322,12 @@ public struct EdgeDockView: View {
             }
 
             Menu("Liquid Glass Theme") {
-                Button { onSelectTheme(.system) } label: {
-                    HStack {
-                        Text("System Liquid Glass")
-                        if materialStyle == .system { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.obsidianDark) } label: {
-                    HStack {
-                        Text("Noir Liquid Glass")
-                        if materialStyle == .obsidianDark { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.crystalClear) } label: {
-                    HStack {
-                        Text("Crystal Clear")
-                        if materialStyle == .crystalClear { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.auroraGlow) } label: {
-                    HStack {
-                        Text("Aurora Borealis")
-                        if materialStyle == .auroraGlow { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.cyberpunkGlass) } label: {
-                    HStack {
-                        Text("Cyberpunk Neon")
-                        if materialStyle == .cyberpunkGlass { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.titaniumFrost) } label: {
-                    HStack {
-                        Text("Titanium Frost")
-                        if materialStyle == .titaniumFrost { Image(systemName: "checkmark") }
-                    }
-                }
-                Button { onSelectTheme(.translucent) } label: {
-                    HStack {
-                        Text("Translucent Blur")
-                        if materialStyle == .translucent { Image(systemName: "checkmark") }
+                ForEach(DockMaterialStyle.presets, id: \.self) { theme in
+                    Button { onSelectTheme(theme) } label: {
+                        HStack {
+                            Text(theme.displayName)
+                            if materialStyle == theme { Image(systemName: "checkmark") }
+                        }
                     }
                 }
             }

@@ -125,15 +125,7 @@ public final class StatusBarController: NSObject, NSMenuDelegate {
 
         // Material Themes Submenu
         let themeSubmenu = NSMenu()
-        let themes: [(String, DockMaterialStyle)] = [
-            ("System Liquid Glass", .system),
-            ("Crystal Clear", .crystalClear),
-            ("Obsidian Dark", .obsidianDark),
-            ("Aurora Borealis", .auroraGlow),
-            ("Cyberpunk Neon", .cyberpunkGlass),
-            ("Titanium Frost", .titaniumFrost),
-            ("Translucent Blur", .translucent)
-        ]
+        let themes: [(String, DockMaterialStyle)] = DockMaterialStyle.presets.map { ($0.displayName, $0) }
         for (themeTitle, themeStyle) in themes {
             let item = NSMenuItem(title: themeTitle, action: #selector(handleSelectTheme(_:)), keyEquivalent: "")
             item.target = self
