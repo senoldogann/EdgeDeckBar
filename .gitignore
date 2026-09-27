@@ -1,0 +1,9 @@
+.DS_Store
+.build/
+dist/
+build/
+DerivedData/
+*.xcuserstate
+.claude/
+.codex/
+*.edgedeck-backup-*

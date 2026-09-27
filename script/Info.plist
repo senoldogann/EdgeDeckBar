@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>EdgeDeck</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIdentifier</key>
+    <string>dev.edgedeck.app</string>
+    <key>CFBundleName</key>
+    <string>EdgeDeck</string>
+    <key>CFBundleDisplayName</key>
+    <string>EdgeDeck</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>15.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>EdgeDeck needs screen inspection access to display live window thumbnail previews.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>EdgeDeck integrates with system media and running applications.</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>EdgeDeck displays connected Bluetooth peripherals and battery percentages.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>EdgeDeck displays connected Bluetooth peripherals and battery percentages.</string>
+</dict>
+</plist>
