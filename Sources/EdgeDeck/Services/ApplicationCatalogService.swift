@@ -12,12 +12,14 @@ public final class ApplicationCatalogService: @unchecked Sendable {
             guard let contents = try? FileManager.default.contentsOfDirectory(
                 at: dir,
                 includingPropertiesForKeys: [.isApplicationKey],
-                options: [.skipsHiddenFiles]
+                // .skipsHiddenFiles kullanılmaz: macOS, Cryptex'teki Safari'ye giden /Applications/Safari.app
+                // bağlantısını "hidden" bayrağıyla işaretler ve Safari listeden düşer. Yalnızca nokta dosyaları elenir.
+                options: []
             ) else {
                 continue
             }
 
-            for url in contents where url.pathExtension == "app" {
+            for url in contents where url.pathExtension == "app" && !url.lastPathComponent.hasPrefix(".") {
                 guard let bundle = Bundle(url: url) else { continue }
                 let bundleID = bundle.bundleIdentifier ?? url.deletingPathExtension().lastPathComponent
                 if seenBundleIDs.contains(bundleID) {
