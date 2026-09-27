@@ -8,13 +8,13 @@ A liquid-glass edge dock for macOS with live widgets and a command center for yo
   <img src=".github/assets/preview.gif" alt="Clicking the AI Usage icon opens live Claude Code and Codex limits counting down" width="760">
 </p>
 
-<p align="center"><a href=".github/assets/edgedeck-film.mp4"><strong>▶ Watch the 30-second film</strong></a></p>
+<p align="center"><a href=".github/assets/edgedeck-film.mp4"><strong>▶ Watch the 30-second film (with sound)</strong></a></p>
 
 EdgeDeck sits on the edge of your screen as a slim glass dock. Apps, links and widgets live in it; clicking a widget opens a flyout next to the dock.
 
 ## Features
 
-- **Edge dock.** Left, right or top edge, auto-hide, icon magnification, drag to reorder, native-style launch bounce, and Show / Hide / Quit / Force Quit for running apps.
+- **Edge dock.** Left, right or top edge, auto-hide that tucks the dock into a small glass handle and slides it back on hover, icon magnification, drag to reorder, native-style launch bounce, and Show / Hide / Quit / Force Quit for running apps.
 - **AI Usage.**
   - Real plan limits for Claude Code and OpenAI Codex: remaining 5-hour and weekly quota with reset countdowns.
   - A 7-day token chart built from your local transcripts.

@@ -563,6 +563,10 @@ public final class AppRuntimeController {
         case .updatePlacement(let placement):
             // Kalıcı kayıt ve auto-hide davranışı preferences üzerinden okunduğu için onunla senkron tutulur
             self.preferences.placement = placement
+            // Auto-hide kapatılırken dock gizliyse geri getirecek tutamaç da kalmaz; dock görünür yapılır
+            if !placement.autoHide && !self.state.isDockRevealed {
+                self.state = reduce(state: self.state, action: .revealDock)
+            }
             refreshSettingsWindow()
         default:
             break
